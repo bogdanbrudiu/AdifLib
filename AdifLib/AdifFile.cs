@@ -7,7 +7,7 @@ namespace M0LTE.AdifLib
 {
     public class AdifFile
     {
-        public AdifHeaderRecord Header { get; set; }
+        public AdifHeaderRecord Header { get; set; } = new AdifHeaderRecord();
         public IList<AdifContactRecord> Records { get; set; } = new List<AdifContactRecord>();
 
         public static bool TryParse(string adif, out AdifFile adifFile)
@@ -146,6 +146,17 @@ namespace M0LTE.AdifLib
             ReadingData
         }
 
-
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(Header.ToString());
+            sb.AppendLine();
+            foreach (var record in Records)
+            {
+                sb.AppendLine(record.ToString());
+                sb.AppendLine();
+            }
+            return sb.ToString().Trim();
+        }
     }
 }
