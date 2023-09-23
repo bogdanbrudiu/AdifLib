@@ -25,21 +25,27 @@ namespace M0LTE.AdifLib
             }
 
             var parts = Regex.Split(adif, "<eoh>", RegexOptions.IgnoreCase);
-
-            if (parts.Length == 2)
+            if (parts.Length <= 2)
             {
+                var data = parts[0];
                 adifFile = new AdifFile();
-
-                if (!AdifHeaderRecord.TryParse(parts[0], out var header, out var error))
+                if (parts.Length == 2)
                 {
-                    adifFile = null;
-                    reason = error;
-                    return false;
+                    if (!AdifHeaderRecord.TryParse(parts[0], out var header, out var error))
+                    {
+                        adifFile = null;
+                        reason = error;
+                        return false;
+                    }
+
+                    adifFile.Header = header;
+
+                    data = parts[1];
                 }
 
-                adifFile.Header = header;
 
-                var data = parts[1];
+
+
 
                 int cursor = 0, dataCur = 0;
                 var state = State.LookingForStartOfField;
@@ -124,9 +130,9 @@ namespace M0LTE.AdifLib
 
                 reason = null;
                 return true;
-            }
 
-            reason = $"There were {parts.Length} parts instead of 2";
+            }
+            reason = $"There were {parts.Length} parts instead of 1 or 2";
             adifFile = null;
             return false;
         }
